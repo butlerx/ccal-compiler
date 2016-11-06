@@ -1,0 +1,15 @@
+var i:integer;
+integer test_fn ( x:integer )
+{
+  var i:integer;
+  i = 2;
+  return (x);
+}
+main
+{
+  // a sim pl e comment
+  /* a comment /* with /* s e v e r a l */ n e s t e d */ comments */
+  var i:integer;
+  i = 1;
+  i = testfn(i) ;
+}
