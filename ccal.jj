@@ -189,28 +189,15 @@ void arithOp () : {} {
 }
 
 void expression () : {} {
-  <LBR> expression() <RBR> express()
-  | [<MINUS_SIGN>]<ID> [<LBR> argList() <RBR>] express()
-  | fragment() express()
-}
-
-void express () : {} {
-  (arithOp() expression()) express()
-  | {}
-}
-
-void fragment () : {} {
-  <TRUE> | <FALSE> | <NUM>
+  (<ID> [<LBR> argList() <RBR>] | <TRUE> | <FALSE> | <NUM>) [ arithOp()  expression() ]
+  | [<MINUS_SIGN>](<ID>|<NUM>) [<LBR> argList() <RBR>]
+  | <LBR> expression() <RBR> [ arithOp()  expression() ]
 }
 
 void condition () : {} {
   <LBR> condition() <RBR> [( <AND> | <OR>) condition()]
   |<NOT> condition()
   | expression() [compOp() expression()] [( <AND> | <OR>) condition()]
-}
-
-void con () : {} {
-  {}
 }
 
 void compOp () : {} {
