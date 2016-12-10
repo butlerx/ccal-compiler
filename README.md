@@ -6,8 +6,7 @@ javacc-compiler for ccal
 ## Build
 To build just run
 ```
-javacc ccal.jj
-javac *.java
+./build.sh
 ```
 
 ## Usage

@@ -11,8 +11,12 @@ fail () {
   exit 1
 }
 
+rm -rf build
+cp -r src build
+cd build
 for grammer in grammers/*; do
   cd "$grammer" || noGram
+  jjtree ccal.jjt
   javacc ccal.jj
   javac ./*.java
   for script in test/*.ccal; do
