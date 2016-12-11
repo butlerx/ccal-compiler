@@ -7,7 +7,6 @@
 import java.util.*;
 
 public class TypeCheckVisitor implements CcalVisitor {
-
   private static HashMap<String, HashMap<String, STC>> ST = new HashMap<>();
   private static HashSet<String> declaredFuncts = new HashSet<String>();
   private static HashSet<String> calledFuncts = new HashSet<String>();
