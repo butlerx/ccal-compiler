@@ -5,23 +5,23 @@ begin
   // figure out sign of result and convert args to absolute values
   if ( x < 0 && y >= 0)
   begin
-    minus_sign = t r u e ;
-    x = −x ;
+    minus_sign = true;
+    x = -x;
   end
   else
   begin
     if y < 0 && x >= 0
     begin
       minus_sign = true;
-      y = −y ;
+      y = -y ;
     end
     else
     begin
       if ( x < 0) && y < 0
       begin
         minus_sign = false;
-        x = −x;
-        y = −y;
+        x = -x;
+        y = -y;
       end
       else
       begin
@@ -35,12 +35,12 @@ begin
   while ( y > 0)
   begin
     result = result + x;
-    y = y − 1;
+    y = y - 1;
   end
 
   if minus_sign == true
   begin
-  result = −result;
+  result = -result;
   end
   else
   begin
@@ -52,10 +52,10 @@ end
 main
 begin
   var arg_1 : integer;
-  var arg-2 : integer;
+  var arg_2 : integer;
   var result : integer;
   const five : integer = 5;
-  arg_1 = −6;
+  arg_1 = -6;
   arg_2 = five ;
-  result = multiply ( arg_1, arg_2 ) ;
+  result = multiply ( arg_1, arg_2 );
 end

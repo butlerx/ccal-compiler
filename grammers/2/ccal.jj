@@ -106,8 +106,8 @@ TOKEN : { /* Keywords and punctuation */
 }
 
 TOKEN : { /* Numbers and identifiers */
-  < NUM : (<DIGIT>)+ >
-  | < #DIGIT : ["0" - "9"] >
+  < NUM : ("0"|(<DIGIT>)+) >
+  | < #DIGIT : ["1" - "9"] >
   | < ID : (<LETTER>) (<LETTER> | <DIGIT> | "_")* >
   | < #LETTER : ["a" - "z", "A" - "Z"] >
 }
@@ -181,10 +181,8 @@ void statement () : {} {
   | <SKP> <SEMIC>
 }
 
-// TODO Double Check Logic, hard to parse
 void expression () : {} {
-  (<ID> [<LBR> argList() <RBR>] | <TRUE> | <FALSE> | <NUM>) [ arithOp()  expression() ]
-  | [<MINUS_SIGN>](<ID>|<NUM>) [<LBR> argList() <RBR>]
+  (<ID> [<LBR> argList() <RBR>]| [<MINUS_SIGN>](<ID>|<NUM>) | <TRUE> | <FALSE> ) [ arithOp() expression() ]
   | <LBR> expression() <RBR> [ arithOp()  expression() ]
 }
 
@@ -192,10 +190,9 @@ void arithOp () : {} {
   ( <PLUS_SIGN> | <MINUS_SIGN> )
 }
 
-// TODO Double Check Logic, hard to parse
 void condition () : {} {
-  <LBR> condition() <RBR> [( <AND> | <OR>) condition()]
-  |<NOT> condition()
+  <NOT> condition()
+  | <LBR> condition() <RBR> [( <AND> | <OR>) condition()]
   | expression() [compOp() expression()] [( <AND> | <OR>) condition()]
 }
 
