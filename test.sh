@@ -11,11 +11,13 @@ fail () {
   exit 1
 }
 
-GRAM=$1
-cd grammers/"$GRAM" 2> /dev/null || noGram
-javacc ccal.jj
-javac ./*.java
-for script in test/*.ccal; do
-  echo "======== Testing $script ========="
-  java Ccal "$script" 2> /dev/null || fail "$script"
+for grammer in grammers/*; do
+  cd "$grammer" || noGram
+  javacc ccal.jj
+  javac ./*.java
+  for script in test/*.ccal; do
+    echo "======== Testing $script ========="
+    java Ccal "$script" 2> /dev/null || fail "$script"
+  done
+  cd ../..
 done

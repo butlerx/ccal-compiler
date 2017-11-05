@@ -45,6 +45,7 @@ PARSER_END(Ccal)
 TOKEN_MGR_DECLS : {
   static int commentNesting = 0;
 }
+
 SKIP : { /* Ignoring spaces/tabs/newlines */
   <"//" (["a"-"z"]|["A"-"Z"]|["0"-"9"]|" ")*("\n"|"\r"|"\r\n")>
   | " "
@@ -59,15 +60,18 @@ SKIP : { /* COMMENTS */
 }
 
 <IN_COMMENT> SKIP : {
-  "/*" { commentNesting++; }
-  | "*/" { commentNesting--;
-    if (commentNesting == 0)
+  "/*" {
+    commentNesting++;
+  } |
+  "*/" {
+    commentNesting--;
+    if (commentNesting == 0) {
       SwitchTo(DEFAULT);
-  }
-  | <~[]>
+    }
+  } | <~[]>
 }
 
-TOKEN : { /* Keywords and punctuation */
+TOKEN [IGNORE_CASE]: { /* Keywords and punctuation */
   < VAR : "var" >
   | < CONST : "const" >
   | < RETURN : "return" >
@@ -82,8 +86,8 @@ TOKEN : { /* Keywords and punctuation */
   | < WHILE : "while" >
   | < SKP : "skip" >
   | < COLON : ":" >
-  | < LEFT_BRACE : "begin" >
-  | < RIGHT_BRACE : "end" >
+  | < BEGIN : "begin" >
+  | < END : "end" >
   | < IS : "is">
   | < NOT : "∼" >
   | < OR : "||" >
@@ -146,16 +150,16 @@ void funcList () : {} {
 }
 
 void function () : {} {
-  type() <ID> <LBR> param() <RBR> <IS>
+  (type() | <VOID>) <ID> <LBR> param() <RBR> <IS>
   declList()
-  <LEFT_BRACE>
+  <BEGIN>
     statementBlock()
     <RETURN> <LBR> (expression() | {} ) <RBR> <SEMIC>
-  <RIGHT_BRACE>
+  <END>
 }
 
 void type () : {} {
-  <INTEGER> | <BOOLEAN> | <VOID>
+  <INTEGER> | <BOOLEAN>
 }
 
 void param () : {} {
@@ -164,10 +168,10 @@ void param () : {} {
 
 void mainProg () : {} {
   <MAIN>
-  <LEFT_BRACE>
+  <BEGIN>
     declList()
     statementBlock()
-  <RIGHT_BRACE>
+  <END>
 }
 
 void statementBlock () : {} {
@@ -176,9 +180,9 @@ void statementBlock () : {} {
 
 void statement () : {} {
   <ID> (<ASSIGN> expression() | <LBR> argList() <RBR>) <SEMIC>
-  | <LEFT_BRACE> statementBlock() <RIGHT_BRACE>
-  | <IF> condition() <LEFT_BRACE> statementBlock() <RIGHT_BRACE> [<ELSE> <LEFT_BRACE> statementBlock() <RIGHT_BRACE>]
-  | <WHILE> condition() <LEFT_BRACE> statementBlock() <RIGHT_BRACE>
+  | <BEGIN> statementBlock() <END>
+  | <IF> condition() <BEGIN> statementBlock() <END> [<ELSE> <BEGIN> statementBlock() <END>]
+  | <WHILE> condition() <BEGIN> statementBlock() <END>
   | <SKP> <SEMIC>
 }
 
