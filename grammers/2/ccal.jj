@@ -1,10 +1,10 @@
-/******************************
-***** SECTION 1 - OPTIONS *****
-******************************/
+/**
+ * SECTION 1 - OPTIONS
+ */
 options { JAVA_UNICODE_ESCAPE = true; }
-/********************************
-***** SECTION 2 - USER CODE *****
-********************************/
+/**
+ * SECTION 2 - USER CODE
+ */
 PARSER_BEGIN(Ccal)
 
 public class Ccal {
@@ -38,13 +38,13 @@ public class Ccal {
   }
 }
 PARSER_END(Ccal)
-/****************************************
-***** SECTION 3 - TOKEN DEFINITIONS *****
-****************************************/
+/**
+ * SECTION 3 - TOKEN DEFINITIONS
+ */
 TOKEN_MGR_DECLS : {
   static int commentNesting = 0;
 }
-SKIP : { /*** Ignoring spaces/tabs/newlines ***/
+SKIP : { /* Ignoring spaces/tabs/newlines */
   <"//" (["a"-"z"]|["A"-"Z"]|["0"-"9"]|" ")*("\n"|"\r"|"\r\n")>
   | " "
   | "\t"
@@ -106,16 +106,16 @@ TOKEN : { /* Keywords and punctuation */
 }
 
 TOKEN : { /* Numbers and identifiers */
-  < NUM : ("0"|(<DIGIT>)+) >
-  | < #DIGIT : ["1" - "9"] >
+  < NUM : "0" | ("-")? ["1" - "9"] (<DIGIT>)* >
+  | < #DIGIT : ["0" - "9"] >
   | < ID : (<LETTER>) (<LETTER> | <DIGIT> | "_")* >
   | < #LETTER : ["a" - "z", "A" - "Z"] >
 }
 
 TOKEN : { /* Anything not recognised so far */ < OTHER : ~[] > }
-/******************************************************
-***** SECTION 4 - THE GRAMMAR & PRODUCTION RULES  *****
-******************************************************/
+/**
+ * SECTION 4 - THE GRAMMAR & PRODUCTION RULES
+ */
 
 void program () : {} {
   declList()
