@@ -1,0 +1,208 @@
+/******************************
+***** SECTION 1 - OPTIONS *****
+******************************/
+options { JAVA_UNICODE_ESCAPE = true; }
+/********************************
+***** SECTION 2 - USER CODE *****
+********************************/
+PARSER_BEGIN(Ccal)
+
+public class Ccal {
+  public static void main(String args[]) {
+    Ccal parser;
+    if (args.length == 0) {
+      System.out.println("Reading from standard input . . .");
+      parser = new Ccal(System.in);
+    } else if (args.length == 1) {
+      try {
+        parser = new Ccal(new java.io.FileInputStream(args[0]));
+      } catch (java.io.FileNotFoundException e) {
+        System.err.println("File " + args[0] + " not found.");
+        return;
+      }
+    }
+    else {
+      System.out.println("ccal: Usage is one of:");
+      System.out.println(" java ccal < inputfile");
+      System.out.println("OR");
+      System.out.println(" java ccal inputfile");
+      return;
+    }
+    try {
+      parser.program();
+      System.out.println("SLP Parser: SLP program parsed successfully.");
+    } catch (ParseException e) {
+      System.out.println(e.getMessage());
+      System.out.println("SLP Parser: Encountered errors during parse.");
+    }
+  }
+}
+PARSER_END(Ccal)
+/****************************************
+***** SECTION 3 - TOKEN DEFINITIONS *****
+****************************************/
+TOKEN_MGR_DECLS : {
+  static int commentNesting = 0;
+}
+SKIP : { /*** Ignoring spaces/tabs/newlines ***/
+  <"//" (["a"-"z"]|["A"-"Z"]|["0"-"9"]|" ")*("\n"|"\r"|"\r\n")>
+  | " "
+  | "\t"
+  | "\n"
+  | "\r"
+  | "\f"
+}
+
+SKIP : { /* COMMENTS */
+  "/*" { commentNesting++; } : IN_COMMENT
+}
+
+<IN_COMMENT> SKIP : {
+  "/*" { commentNesting++; }
+  | "*/" { commentNesting--;
+    if (commentNesting == 0)
+      SwitchTo(DEFAULT);
+  }
+  | <~[]>
+}
+
+TOKEN : { /* Keywords and punctuation */
+  < VAR : "var" >
+  | < CONST : "const" >
+  | < RETURN : "return" >
+  | < INTEGER : "integer" >
+  | < BOOLEAN : "boolean" >
+  | < VOID : "void" >
+  | < MAIN : "main" >
+  | < IF : "if" >
+  | < ELSE : "else" >
+  | < TRUE : "true" >
+  | < FALSE : "false" >
+  | < WHILE : "while" >
+  | < SKP : "skip" >
+  | < COLON : ":" >
+  | < LEFT_BRACE : "begin" >
+  | < RIGHT_BRACE : "end" >
+  | < IS : "is">
+  | < NOT : "∼" >
+  | < OR : "||" >
+  | < AND : "&&" >
+  | < EQUAL : "==" >
+  | < NOT_EQUAL : "!=" >
+  | < LESS_THAN : "<" >
+  | < GREATER_THAN : ">" >
+  | < LESS_EQUALS : "<=" >
+  | < GREATER_EQUALS : ">=" >
+  | < SEMIC : ";" >
+  | < ASSIGN : "=" >
+  | < PRINT : "print" >
+  | < LBR : "(" >
+  | < RBR : ")" >
+  | < COMMA : "," >
+  | < PLUS_SIGN : "+" >
+  | < MINUS_SIGN : "-" >
+  | < MULT_SIGN : "*" >
+  | < DIV_SIGN : "/" >
+}
+
+TOKEN : { /* Numbers and identifiers */
+  < NUM : (<DIGIT>)+ >
+  | < #DIGIT : ["0" - "9"] >
+  | < ID : (<LETTER>) (<LETTER> | <DIGIT> | "_")* >
+  | < #LETTER : ["a" - "z", "A" - "Z"] >
+}
+
+TOKEN : { /* Anything not recognised so far */ < OTHER : ~[] > }
+/******************************************************
+***** SECTION 4 - THE GRAMMAR & PRODUCTION RULES  *****
+******************************************************/
+
+void program () : {} {
+  declList()
+  funcList()
+  mainProg()
+  <EOF>
+}
+
+void declList () : {} {
+  (( declaration() <SEMIC> declList()) | {} )
+}
+
+void declaration () : {} {
+  ( varDecl() | constDecl() )
+}
+
+void varDecl () : {} {
+  <VAR> <ID> <COLON> type()
+}
+
+void constDecl () : {} {
+  <CONST> <ID> <COLON> type() <ASSIGN> expression()
+}
+
+void funcList () : {} {
+  ((function() funcList()) | {})
+}
+
+void function () : {} {
+  type() <ID> <LBR> param() <RBR> <IS>
+  declList()
+  <LEFT_BRACE>
+    statementBlock()
+    <RETURN> <LBR> (expression() | {} ) <RBR> <SEMIC>
+  <RIGHT_BRACE>
+}
+
+void type () : {} {
+  <INTEGER> | <BOOLEAN> | <VOID>
+}
+
+void param () : {} {
+  ( <ID> <COLON> type() ( <COMMA> <ID> <COLON> type() )* | {}  )
+}
+
+void mainProg () : {} {
+  <MAIN>
+  <LEFT_BRACE>
+    declList()
+    statementBlock()
+  <RIGHT_BRACE>
+}
+
+void statementBlock () : {} {
+  ((statement() statementBlock()) | {})
+}
+
+void statement () : {} {
+  <ID> (<ASSIGN> expression() | <LBR> argList() <RBR>) <SEMIC>
+  | <LEFT_BRACE> statementBlock() <RIGHT_BRACE>
+  | <IF> condition() <LEFT_BRACE> statementBlock() <RIGHT_BRACE> [<ELSE> <LEFT_BRACE> statementBlock() <RIGHT_BRACE>]
+  | <WHILE> condition() <LEFT_BRACE> statementBlock() <RIGHT_BRACE>
+  | <SKP> <SEMIC>
+}
+
+// TODO Double Check Logic, hard to parse
+void expression () : {} {
+  (<ID> [<LBR> argList() <RBR>] | <TRUE> | <FALSE> | <NUM>) [ arithOp()  expression() ]
+  | [<MINUS_SIGN>](<ID>|<NUM>) [<LBR> argList() <RBR>]
+  | <LBR> expression() <RBR> [ arithOp()  expression() ]
+}
+
+void arithOp () : {} {
+  ( <PLUS_SIGN> | <MINUS_SIGN> )
+}
+
+// TODO Double Check Logic, hard to parse
+void condition () : {} {
+  <LBR> condition() <RBR> [( <AND> | <OR>) condition()]
+  |<NOT> condition()
+  | expression() [compOp() expression()] [( <AND> | <OR>) condition()]
+}
+
+void compOp () : {} {
+  ( <EQUAL> | <NOT_EQUAL> | <LESS_THAN> | <LESS_EQUALS> | <GREATER_THAN> | <GREATER_EQUALS> )
+}
+
+void argList () : {} {
+  ( <ID> ( <COMMA> <ID> )* | {}  )
+}
