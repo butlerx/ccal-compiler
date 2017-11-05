@@ -34,6 +34,7 @@ public class Ccal {
     } catch (ParseException e) {
       System.out.println(e.getMessage());
       System.out.println("SLP Parser: Encountered errors during parse.");
+      System.exit(1);
     }
   }
 }
@@ -182,8 +183,8 @@ void statement () : {} {
 }
 
 void expression () : {} {
-  (<ID> [<LBR> argList() <RBR>]| [<MINUS_SIGN>](<ID>|<NUM>) | <TRUE> | <FALSE> ) [ arithOp() expression() ]
-  | <LBR> expression() <RBR> [ arithOp()  expression() ]
+  (<ID> [<LBR> argList() <RBR>] | <MINUS_SIGN>(<ID>) | <NUM> | <TRUE> | <FALSE> ) [ arithOp() expression() ]
+  | <LBR> condition() <RBR> [ arithOp()  expression() ]
 }
 
 void arithOp () : {} {
@@ -192,8 +193,7 @@ void arithOp () : {} {
 
 void condition () : {} {
   <NOT> condition()
-  | <LBR> condition() <RBR> [( <AND> | <OR>) condition()]
-  | expression() [compOp() expression()] [( <AND> | <OR>) condition()]
+  | expression() [compOp() expression()] [(<AND> | <OR>) condition()]
 }
 
 void compOp () : {} {
