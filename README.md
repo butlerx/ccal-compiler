@@ -1,4 +1,6 @@
 # ccal-compiler
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbutlerx%2Fccal-compiler.svg?type=shield)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbutlerx%2Fccal-compiler?ref=badge_shield)
+
 javacc-compiler for ccal
 
 ## Build
@@ -25,3 +27,7 @@ To test just run
 ```
 ./test.sh
 ```
+
+
+## License
+[![FOSSA Status](https://app.fossa.io/api/projects/git%2Bgithub.com%2Fbutlerx%2Fccal-compiler.svg?type=large)](https://app.fossa.io/projects/git%2Bgithub.com%2Fbutlerx%2Fccal-compiler?ref=badge_large)
