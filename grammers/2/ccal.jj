@@ -1,12 +1,6 @@
-/**
- * SECTION 1 - OPTIONS
- */
 options { JAVA_UNICODE_ESCAPE = true; }
-/**
- * SECTION 2 - USER CODE
- */
-PARSER_BEGIN(Ccal)
 
+PARSER_BEGIN(Ccal)
 public class Ccal {
   public static void main(String args[]) {
     Ccal parser;
@@ -39,14 +33,11 @@ public class Ccal {
   }
 }
 PARSER_END(Ccal)
-/**
- * SECTION 3 - TOKEN DEFINITIONS
- */
-TOKEN_MGR_DECLS : {
-  static int commentNesting = 0;
-}
 
-SKIP : { /* Ignoring spaces/tabs/newlines */
+TOKEN_MGR_DECLS : { static int commentNesting = 0; }
+
+/* Ignoring spaces/tabs/newlines */
+SKIP : {
   <"//" (["a"-"z"]|["A"-"Z"]|["0"-"9"]|" ")*("\n"|"\r"|"\r\n")>
   | " "
   | "\t"
@@ -55,9 +46,8 @@ SKIP : { /* Ignoring spaces/tabs/newlines */
   | "\f"
 }
 
-SKIP : { /* COMMENTS */
-  "/*" { commentNesting++; } : IN_COMMENT
-}
+/* COMMENTS */
+SKIP : { "/*" { commentNesting++; } : IN_COMMENT }
 
 <IN_COMMENT> SKIP : {
   "/*" {
@@ -71,7 +61,8 @@ SKIP : { /* COMMENTS */
   } | <~[]>
 }
 
-TOKEN [IGNORE_CASE]: { /* Keywords and punctuation */
+/* Keywords and punctuation */
+TOKEN [IGNORE_CASE]: {
   < VAR : "var" >
   | < CONST : "const" >
   | < RETURN : "return" >
@@ -163,7 +154,7 @@ void type () : {} {
 }
 
 void param () : {} {
-  ( <ID> <COLON> type() ( <COMMA> <ID> <COLON> type() )* | {}  )
+  ( <ID> <COLON> type() [ <COMMA> param()] | {})
 }
 
 void mainProg () : {} {
@@ -187,8 +178,8 @@ void statement () : {} {
 }
 
 void expression () : {} {
-  (<ID> [<LBR> argList() <RBR>] | <MINUS_SIGN>(<ID>) | <NUM> | <TRUE> | <FALSE> ) [ arithOp() expression() ]
-  | <LBR> condition() <RBR> [ arithOp()  expression() ]
+  <LBR> condition() <RBR> [ arithOp()  expression() ]
+  | (<ID> [<LBR> argList() <RBR>] | <MINUS_SIGN>(<ID>) | <NUM> | <TRUE> | <FALSE> ) [ arithOp() expression() ]
 }
 
 void arithOp () : {} {
