@@ -12,7 +12,7 @@ fail () {
 }
 
 rm -rf build
-cp -r src build
+cp -r $1 build
 cd build
 for grammer in grammers/*; do
   cd "$grammer" || noGram
