@@ -12,16 +12,17 @@ fail () {
 }
 
 rm -rf build
-cp -r $1 build
+cp -r "$1" build
 cd build
 for grammer in grammers/*; do
   cd "$grammer" || noGram
-  jjtree ccal.jjt
-  javacc ccal.jj
-  javac ./*.java
+  jjtree ccal.jjt 1> /dev/null
+  javacc ccal.jj  1> /dev/null
+  javac ./*.java  1> /dev/null
+  echo "======== Testing $grammer ========="
   for script in test/*.ccal; do
     echo "======== Testing $script ========="
-    java Ccal "$script" 2> /dev/null || fail "$script"
+    java Ccal "$script" || fail "$script"
   done
   cd ../..
 done

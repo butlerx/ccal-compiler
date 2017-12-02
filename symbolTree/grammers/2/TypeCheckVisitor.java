@@ -35,11 +35,13 @@ public class TypeCheckVisitor implements CcalVisitor {
       }
     }
 
-    if(calledFuncts.size() == declaredFuncts.size()) {
+    if (calledFuncts.size() == declaredFuncts.size()) {
       System.out.println("All declared functions were called");
     }
-    else {
+    else if (declaredFuncts.size() != 0) {
       System.out.println("Not all declared functions were called");
+    } else {
+      System.out.println("No Functions were declared");
     }
     return DataType.Program;
   }
@@ -128,6 +130,7 @@ public class TypeCheckVisitor implements CcalVisitor {
     HashMap<String, HashMap<String, STC>> ST = (HashMap<String, HashMap<String, STC>>) data;
     HashMap<String, STC> innerMap = new HashMap();
     innerMap = ST.get(currentScope);
+    System.out.println(node);
     STC mapEntry = innerMap.get(node.value);
     if (mapEntry == null) {
       if(node.value != null) {

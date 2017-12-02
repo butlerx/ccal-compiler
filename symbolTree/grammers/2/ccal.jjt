@@ -161,35 +161,39 @@ SimpleNode program() #Program : {} {
   }
 }
 
-void declList ( String scope ) : {} {
+void declList(String scope):{} {
   (( declaration(scope) <SEMIC> declList(scope)) | {} )
 }
 
-void declaration ( String scope ) : {} {
+void declaration(String scope):{} {
   ( varDecl(scope) | constDecl(scope) )
 }
 
-void varDecl( String scope ) #VarDecl : { String name; Token t; } {
+void varDecl(String scope) #VarDecl : { String name; Token t; } {
   <VAR> name = id() <COLON> t = type() {
-    if(t.toString() == "integer" && name != "") {
-      innerMap.put(name , new STC(name, "int"));
-    } else if(t.toString() == "boolean" && name != "") {
-      innerMap.put(name , new STC(name, "bool"));
+    if (t != null) {
+      if (t.toString().equals("integer") && !name.isEmpty()) {
+        innerMap.put(name , new STC(name, "int"));
+      } else if (t.toString().equals("boolean") && !name.isEmpty()) {
+        innerMap.put(name , new STC(name, "bool"));
+      }
     }
   }
 }
 
-void constDecl ( String scope ) #ConstDecl : { String name; Token t; } {
+void constDecl(String scope) #ConstDecl : { String name; Token t; } {
   <CONST> name = id() <COLON> t = type() <ASSIGN> expression() {
-    if(t.toString() == "integer" && name != "") {
-      innerMap.put(name , new STC(name, "int"));
-    } else if(t.toString() == "boolean" && name != "") {
-      innerMap.put(name , new STC(name, "bool"));
+    if (t != null) {
+      if (t.toString().equals("integer") && !name.isEmpty()) {
+        innerMap.put(name , new STC(name, "int"));
+      } else if (t.toString().equals("boolean") && !name.isEmpty()) {
+        innerMap.put(name , new STC(name, "bool"));
+      }
     }
   }
 }
 
-void funcList () : {} {
+void funcList():{} {
   ((function() funcList()) | {})
 }
 
@@ -217,7 +221,14 @@ Token type () #Type : { Token t; } {
   }
 }
 
-void param () #Param : {
+Token voidDec() #Void : { Token t; } {
+  t = <VOID> {
+    jjtThis.value = token;
+    return t;
+  }
+}
+
+void param() #Param : {
   String name = new String();
   String type = new String();
   String nameTemp = new String();
@@ -229,17 +240,19 @@ void param () #Param : {
     extras.add(t.toString());
     for(int i = 0; i < extras.size(); i = i + 2) {
       name = extras.get(i);
-      type = extras.get(i++);
-      if(type == "integer" && name != "") {
-        innerMap.put(name , new STC(name, "int"));
-      } else if(type == "boolean" && name != "") {
-        innerMap.put(name , new STC(name, "bool"));
+      type = extras.get(i + 1);
+      if (type != null) {
+        if (type.toString().equals("integer") && !name.isEmpty()) {
+          innerMap.put(name , new STC(name, "int"));
+        } else if (type.toString().equals("boolean") && !name.isEmpty()) {
+          innerMap.put(name , new STC(name, "bool"));
+        }
       }
     }
   }
 }
 
-LinkedList<String> comma() : {
+LinkedList <String> comma():{
   String name= "";
   LinkedList<String> names = new LinkedList<String>();
   Token t = new Token();
@@ -255,14 +268,14 @@ LinkedList<String> comma() : {
   }
 }
 
-String id () #Id : { Token t; } {
+String id() #Id : { Token t; } {
   t = <ID> {
     jjtThis.value = t.image;
     return t.image;
   }
 }
 
-void mainProg () #MainProg : {} {
+void mainProg() #MainProg : {} {
   <MAIN>
   <BEGIN>
     declList("main") {
@@ -274,11 +287,11 @@ void mainProg () #MainProg : {} {
   <END>
 }
 
-void statementBlock () : {} {
+void statementBlock():{} {
   ((statement() statementBlock()) | {})
 }
 
-void statement () : {} {
+void statement ():{} {
   id() (<ASSIGN> expression() | <LBR> argList() <RBR>) <SEMIC>
   | <BEGIN> statementBlock() <END>
   | <IF> condition() <BEGIN> statementBlock() <END> [<ELSE> <BEGIN> statementBlock() <END>]
@@ -338,12 +351,6 @@ void bool() #Bool : {} {
 
 void num() #Num : {} {
   <NUM> {
-    jjtThis.value = token;
-  }
-}
-
-void voidDec() #Void : {} {
-  <VOID> {
     jjtThis.value = token;
   }
 }
