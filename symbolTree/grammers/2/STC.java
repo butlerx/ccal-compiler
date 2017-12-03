@@ -6,18 +6,16 @@
 
 import java.util.*;
 
-public class STC extends Object
-{
-    String type;
-    String value;
+public class STC extends Object {
+  String type;
+  String value;
 
-    public STC(String ivalue, String itype)
-    {
-	    type = itype;
-	    value = ivalue;
-    }
+  public STC(String ivalue, String itype) {
+    type = itype;
+    value = ivalue;
+  }
 
-    @Override public String toString() {
-      return( "type: " + type + " i, value: " + value );
-    }
+  @Override public String toString() {
+    return( "type: " + type + " i, value: " + value );
+  }
 }

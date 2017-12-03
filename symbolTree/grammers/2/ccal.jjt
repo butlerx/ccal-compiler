@@ -3,6 +3,7 @@ options {
   MULTI = true;
   VISITOR = true;
   NODE_DEFAULT_VOID = true;
+  //DEBUG_PARSER=true;
 }
 
 PARSER_BEGIN(Ccal)
@@ -57,6 +58,11 @@ public class Ccal {
           }
         }
       }
+      /*
+      System.out.println("Program: ");
+      PrintVisitor pv = new PrintVisitor();
+      root.jjtAccept(pv, null);
+      */
       System.out.println("Type Checking: ");
       TypeCheckVisitor tcv = new TypeCheckVisitor();
       root.jjtAccept(tcv, ST);
@@ -151,11 +157,11 @@ TOKEN : { < OTHER : ~[] > }
 
 SimpleNode program() #Program : {} {
   declList("global") {
-  ST.put("global", innerMap);
+    ST.put("global", innerMap);
     HashMap tempMap = new HashMap();
     innerMap = tempMap;
   }
-  funcList()
+  (function())*
   mainProg() {
     return jjtThis;
   }
@@ -181,8 +187,14 @@ void varDecl(String scope) #VarDecl : { String name; Token t; } {
   }
 }
 
+void assign() #Assign : {} {
+  <ASSIGN> {
+    jjtThis.value = token;
+  }
+}
+
 void constDecl(String scope) #ConstDecl : { String name; Token t; } {
-  <CONST> name = id() <COLON> t = type() <ASSIGN> expression() {
+  <CONST> name = id() <COLON> t = type() assign() expression() {
     if (t != null) {
       if (t.toString().equals("integer") && !name.isEmpty()) {
         innerMap.put(name , new STC(name, "int"));
@@ -191,10 +203,6 @@ void constDecl(String scope) #ConstDecl : { String name; Token t; } {
       }
     }
   }
-}
-
-void funcList():{} {
-  ((function() funcList()) | {})
 }
 
 void function () #Function : { String name; HashMap map; } {
@@ -221,7 +229,7 @@ Token type () #Type : { Token t; } {
   }
 }
 
-Token voidDec() #Void : { Token t; } {
+Token voidDec() #VoidDec : { Token t; } {
   t = <VOID> {
     jjtThis.value = token;
     return t;
@@ -292,7 +300,7 @@ void statementBlock():{} {
 }
 
 void statement ():{} {
-  id() (<ASSIGN> expression() | <LBR> argList() <RBR>) <SEMIC>
+  id() (assign() expression() | <LBR> argList() <RBR>) <SEMIC>
   | <BEGIN> statementBlock() <END>
   | <IF> condition() <BEGIN> statementBlock() <END> [<ELSE> <BEGIN> statementBlock() <END>]
   | <WHILE> condition() <BEGIN> statementBlock() <END>
@@ -330,9 +338,11 @@ void compOp () #CompOp : {} {
   } |
   <GREATER_THAN> {
     jjtThis.value = token;
-  } | <LESS_EQUALS> {
+  } |
+  <LESS_EQUALS> {
     jjtThis.value = token;
-  } | <GREATER_EQUALS> {
+  } |
+  <GREATER_EQUALS> {
     jjtThis.value = token;
   }
 }
