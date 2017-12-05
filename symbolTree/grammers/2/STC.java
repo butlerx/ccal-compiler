@@ -15,7 +15,8 @@ public class STC extends Object {
     value = ivalue;
   }
 
-  @Override public String toString() {
-    return( "type: " + type + " i, value: " + value );
+  @Override
+  public String toString() {
+    return ("type: " + type + " i, value: " + value);
   }
 }

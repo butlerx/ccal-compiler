@@ -25,34 +25,33 @@ public class TypeCheckVisitor implements CcalVisitor {
       node.jjtGetChild(i);
     }
 
-    //Function to check what funcs are called
+    // Function to check what funcs are called
     // Does not opperate correct
     // Finds all scopes
-    for(Map.Entry<String, HashMap<String, STC>> entry : ST.entrySet()) {
+    for (Map.Entry<String, HashMap<String, STC>> entry : ST.entrySet()) {
       String tempScope = entry.getKey();
-      if (tempScope.equals("main") && !tempScope.equals("global")){
+      if (tempScope.equals("main") && !tempScope.equals("global")) {
         calledFuncts.add(tempScope);
       }
     }
 
-    if(calledFuncts.size() == declaredFuncts.size()) {
+    if (calledFuncts.size() == declaredFuncts.size()) {
       System.out.println("All declared functions were called");
-    }
-    else {
+    } else {
       System.out.println("Not all declared functions were called");
     }
     return DataType.Program;
   }
 
   public Object visit(ASTVarDecl node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     return DataType.VarDeclaration;
   }
 
   public Object visit(ASTConstDecl node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     return DataType.ConstDeclaration;
@@ -67,7 +66,7 @@ public class TypeCheckVisitor implements CcalVisitor {
   }
 
   public Object visit(ASTParam node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     return DataType.ParamList;
@@ -78,7 +77,7 @@ public class TypeCheckVisitor implements CcalVisitor {
   }
 
   public Object visit(ASTMainProg node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     currentScope = "main";
@@ -86,7 +85,7 @@ public class TypeCheckVisitor implements CcalVisitor {
   }
 
   public Object visit(ASTArithOp node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     return DataType.Plus;
@@ -100,14 +99,14 @@ public class TypeCheckVisitor implements CcalVisitor {
   }
 
   public Object visit(ASTCompOp node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     return DataType.Equal;
   }
 
   public Object visit(ASTArgList node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     return DataType.ArgList;
@@ -118,7 +117,7 @@ public class TypeCheckVisitor implements CcalVisitor {
   }
 
   public Object visit(ASTBool node, Object data) {
-    if ( node.jjtGetNumChildren() > 0) {
+    if (node.jjtGetNumChildren() > 0) {
       node.jjtGetChild(0).jjtAccept(this, data);
     }
     return DataType.TypeBoolean;
@@ -130,7 +129,7 @@ public class TypeCheckVisitor implements CcalVisitor {
     innerMap = ST.get(currentScope);
     STC mapEntry = innerMap.get(node.value);
     if (mapEntry == null) {
-      if(node.value != null) {
+      if (node.value != null) {
         currentScope = node.value.toString();
         declaredFuncts.add((String) node.value);
       }

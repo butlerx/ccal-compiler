@@ -13,7 +13,7 @@ public class PrintVisitor implements CcalVisitor {
   public Object visit(ASTProgram node, Object data) {
     node.jjtGetChild(0).jjtAccept(this, data);
     System.out.println(";");
-    return(data);
+    return (data);
   }
 
   public Object visit(ASTVarDecl node, Object data) {
@@ -39,6 +39,7 @@ public class PrintVisitor implements CcalVisitor {
     node.jjtGetChild(0).jjtAccept(this, data);
     return data;
   }
+
   public Object visit(ASTType node, Object data) {
     System.out.print(node.value + " ");
     node.jjtGetChild(0).jjtAccept(this, data);
