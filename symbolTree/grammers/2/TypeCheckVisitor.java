@@ -57,7 +57,9 @@ public class TypeCheckVisitor implements CcalVisitor {
   }
 
   public Object visit(ASTParam node, Object data) {
-    node.jjtGetChild(0).jjtAccept(this, data);
+    if (node.jjtGetNumChildren() > 0) {
+      node.jjtGetChild(0).jjtAccept(this, data);
+    }
     return DataType.ParamList;
   }
 
@@ -91,9 +93,6 @@ public class TypeCheckVisitor implements CcalVisitor {
   public Object visit(ASTArithOp node, Object data) {
     node.jjtGetChild(0).jjtAccept(this, data);
     return DataType.Plus;
-    // return DataType.Minus;
-    // return DataType.Div;
-    // return DataType.Mult;
   }
 
   public Object visit(ASTCondition node, Object data) {
@@ -106,12 +105,6 @@ public class TypeCheckVisitor implements CcalVisitor {
   public Object visit(ASTCompOp node, Object data) {
     node.jjtGetChild(0).jjtAccept(this, data);
     return DataType.Equal;
-
-    // return DataType.NotEqual;
-    // return DataType.LessThan;
-    // return DataType.GreaterThan;
-    // return DataType.LTE;
-    // return DataType.GTE;
   }
 
   public Object visit(ASTArgList node, Object data) {

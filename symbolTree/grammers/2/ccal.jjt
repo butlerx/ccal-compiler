@@ -51,18 +51,18 @@ public class Ccal {
           String type = innerEntry.getKey();
           STC tempSTC = innerEntry.getValue();
           if(tempSTC.type != null) {
-            System.out.println("type = " + tempSTC.type);
+            System.out.println("type: " + tempSTC.type);
           };
           if(tempSTC.value != null) {
-            System.out.println("value = " + tempSTC.value);
+            System.out.println("value: " + tempSTC.value);
           }
+          System.out.println("------------");
         }
       }
-      /*
-      System.out.println("Program: ");
+      /* System.out.println("Program: ");
       PrintVisitor pv = new PrintVisitor();
-      root.jjtAccept(pv, null);
-      */
+      root.jjtAccept(pv, ST);
+      System.out.println();*/
       System.out.println("Type Checking: ");
       TypeCheckVisitor tcv = new TypeCheckVisitor();
       root.jjtAccept(tcv, ST);
